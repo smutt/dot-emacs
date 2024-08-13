@@ -16,10 +16,16 @@
  '(custom-safe-themes
    '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
  '(inhibit-startup-screen t)
- '(package-selected-packages '(color-theme-sanityinc-tomorrow))
+ '(js-indent-level 2)
+ '(mediawiki-site-alist
+   '(("Wikipedia" "https://en.wikipedia.org/w/" "username" "password" nil "Main Page")
+     ("DorkyDwarves" "https://falcon.depht.com" "BreeLightfoot" "" "No" "Dorky Dwarves Community Wiki")))
+ '(package-selected-packages
+   '(markdown-mode mediawiki php-mode color-theme-sanityinc-tomorrow))
  '(show-paren-mode t)
- '(standard-indent 2)
  '(transient-mark-mode t))
+
+(setq column-number-mode t)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -40,10 +46,10 @@
 
 ;; Setup the melpa emacs packaging system
 (require 'package)
-;;(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
 ;; Set up Tramp
@@ -71,7 +77,7 @@
 (set-default 'indent-tabs-mode nil)
 
 ;; Zap trailing whitespace before any save
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;;(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; recent files
 (require 'recentf)
@@ -127,13 +133,38 @@
 ;;    (setq c-indent-level 4))))
 
 ;; PHP
-;; (setq c-basic-offset 2)
+(add-hook 'php-mode-hook #'(lambda() (setq c-basic-offset 2)))
+;;(setq c-basic-offset 2)
 
 ;; Python
-;;(add-hook 'python-mode-hook '(lambda ()
-;;  (setq python-indent 2)))
-;;(setq py-indent-offset 2)
-;;(setq-default python-indent 2)
+(add-hook 'python-mode-hook #'(lambda ()
+  (setq python-indent 2)))
+(setq py-indent-offset 2)
+(setq-default python-indent 2)
 
 ;; JavaScript
 ;;(setq js-indent-level 2)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Buffers / Windows / Frames ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Replace buffer-mode with iBuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(add-hook 'ibuffer-mode-hook (lambda () (ibuffer-auto-mode 1)))
+
+;; Hide buffers starting with *
+(require 'ibuf-ext)
+(add-to-list 'ibuffer-never-show-predicates "^\\*")
+
+(setq initial-frame-alist '((top . 1) (left . 1)))
+(set-frame-size (selected-frame) 220 100)
+
+(split-window-right -80)
+(other-window 1)
+(ibuffer)
+(other-window -1)
+
+;; This does not work
+;;(setq ibuffer-saved-filter-groups
+;;  '(("remote"
+;;    ("remote2" (name  . "/ssh:.+")))))
