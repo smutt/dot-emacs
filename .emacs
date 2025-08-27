@@ -1,31 +1,21 @@
-;; ____________________________________________________________________________
-;; Aquamacs custom-file warning:
-;; Warning: After loading this .emacs file, Aquamacs will also load
-;; customizations from `custom-file' (customizations.el). Any settings there
-;; will override those made here.
-;; Consider moving your startup settings to the Preferences.el file, which
-;; is loaded after `custom-file':
-;; ~/Library/Preferences/Aquamacs Emacs/Preferences
-;; _____________________________________________________________________________
+(setq custom-safe-themes t)
+(setq column-number-mode t)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-enabled-themes '(sanityinc-tomorrow-night))
- '(custom-safe-themes
-   '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
  '(inhibit-startup-screen t)
  '(js-indent-level 2)
  '(mediawiki-site-alist
    '(("Wikipedia" "https://en.wikipedia.org/w/" "username" "password" nil "Main Page")
      ("DorkyDwarves" "https://falcon.depht.com" "BreeLightfoot" "" "No" "Dorky Dwarves Community Wiki")))
  '(package-selected-packages
-   '(markdown-mode mediawiki php-mode color-theme-sanityinc-tomorrow))
+   '(ibuffer-tramp markdown-mode mediawiki php-mode color-theme-sanityinc-tomorrow))
  '(show-paren-mode t)
  '(transient-mark-mode t))
-
-(setq column-number-mode t)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -71,7 +61,7 @@
 (setq backup-inhibited t)
 
 ;; abbrev-mode causes more trouble than its worth
-(setq abbrev-file-name "/dev/null")
+(abbrev-mode -1)
 
 ;; Disable tabs in indentation
 (set-default 'indent-tabs-mode nil)
@@ -148,6 +138,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Buffers / Windows / Frames ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq initial-frame-alist '((top . 0) (left . 0)))
+(set-frame-size (selected-frame) 195 90)
+
 ;; Replace buffer-mode with iBuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (add-hook 'ibuffer-mode-hook (lambda () (ibuffer-auto-mode 1)))
@@ -156,15 +149,17 @@
 (require 'ibuf-ext)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 
-(setq initial-frame-alist '((top . 1) (left . 1)))
-(set-frame-size (selected-frame) 220 100)
+(use-package ibuffer-sidebar
+  :bind (("C-x C-b" . ibuffer-sidebar-toggle-sidebar))
+  :ensure nil
+  :commands (ibuffer-sidebar-toggle-sidebar))
+(setq display-buffer-base-action
+      '((display-buffer-reuse-window
+         display-buffer-use-some-window)))
+(ibuffer-sidebar-toggle-sidebar)
 
-(split-window-right -80)
+;; Globally only cycle through actual file buffers with C-x <right> and C-x <left>
+(set-frame-parameter (selected-frame) 'buffer-predicate #'buffer-file-name)
+
+;; Finally switch back to main buffer
 (other-window 1)
-(ibuffer)
-(other-window -1)
-
-;; This does not work
-;;(setq ibuffer-saved-filter-groups
-;;  '(("remote"
-;;    ("remote2" (name  . "/ssh:.+")))))
